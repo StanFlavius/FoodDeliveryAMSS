@@ -22,6 +22,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -85,10 +86,14 @@ public class AuthController {
             @ApiResponse(code = 404, message = "Specified resource does not exist")
     })
     @PostMapping("/auth")
-    public ResponseEntity<String> auth(@RequestBody @Valid AuthRequest request) {
+    public ResponseEntity<HashMap<String, String>> auth(@RequestBody @Valid AuthRequest request) {
         UserEntity userEntity = userService.findByLoginAndPassword(request.getEmail(), request.getPassword());
         String token = jwtProvider.generateToken(userEntity.getEmail());
-        return ResponseEntity.ok().body(token);
+        HashMap<String, String> response = new HashMap<>();
+        response.put("token", token);
+        response.put("email", userEntity.getEmail());
+        response.put("role", userEntity.getRoleEntity().getName());
+        return ResponseEntity.ok().body(response);
     }
 
     @ApiOperation(value = "TEST ADMIN AUTHENTICATION")
