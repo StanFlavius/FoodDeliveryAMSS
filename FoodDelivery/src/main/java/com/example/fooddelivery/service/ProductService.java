@@ -2,6 +2,7 @@ package com.example.fooddelivery.service;
 
 import com.example.fooddelivery.dto.product.EditProductQuantityDto;
 import com.example.fooddelivery.dto.product.GetProductListDto;
+import com.example.fooddelivery.dto.product.NewProductDto;
 import com.example.fooddelivery.exception.productExp.MenuHasProductToBeDeleted;
 import com.example.fooddelivery.exception.productExp.ProductAlreadyExist;
 import com.example.fooddelivery.exception.productExp.ProductDoesNotExist;
@@ -28,18 +29,18 @@ public class ProductService {
     @Autowired
     RestaurantRepository restaurantRepository;
 
-    public Product addNewProduct(String productName, Integer price, Integer restaurantId){
+    public Product addNewProduct(NewProductDto newProduct, Integer restaurantId) {
 
         Restaurant restaurant = restaurantRepository.getById(restaurantId);
 
-        Product productExist = productRepository.findByNameAndRestaurant(productName, restaurant);
+        Product productExist = productRepository.findByNameAndRestaurant(newProduct.getName(), restaurant);
         if (productExist != null)
-            throw new ProductAlreadyExist("Product " + productName + " already exists in " + restaurant.getName());
+            throw new ProductAlreadyExist("Product " + newProduct.getName() + " already exists in " + restaurant.getName());
 
         Product product = new Product();
-        product.setName(productName);
-        product.setQuantity(0);
-        product.setPrice(price);
+        product.setName(newProduct.getName());
+        product.setQuantity(newProduct.getQuantity());
+        product.setPrice(newProduct.getPrice());
         product.setRestaurant(restaurant);
 
         productRepository.save(product);

@@ -1,5 +1,6 @@
 package com.example.fooddelivery.model;
 
+import com.example.fooddelivery.dto.product.NewProductDto;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 

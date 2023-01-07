@@ -3,6 +3,7 @@ package com.example.fooddelivery.controller;
 import com.example.fooddelivery.config.CustomUserDetails;
 import com.example.fooddelivery.dto.product.EditProductQuantityDto;
 import com.example.fooddelivery.dto.product.GetProductListDto;
+import com.example.fooddelivery.dto.product.NewProductDto;
 import com.example.fooddelivery.dto.restaurant.ViewRestaurantDto;
 import com.example.fooddelivery.mapper.ProductMapper;
 import com.example.fooddelivery.model.Product;
@@ -27,6 +28,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -56,12 +58,14 @@ public class ProductController {
             @ApiResponse(code = 400, message = "Invalid request"),
             @ApiResponse(code = 404, message = "Specified resource does not exist")
     })
-    @PostMapping("/{nameProduct}/{price}/{restaurantId}")
-    public ResponseEntity<GetProductListDto> addNewProduct(@PathVariable @NotBlank(message = "you have to introduce the name of the product in order to add it to the database") String nameProduct,
-                                                           @PathVariable Integer price,
-                                                           @PathVariable Integer restaurantId) {
+    @PostMapping("")
+    public ResponseEntity<GetProductListDto> addNewProduct(@RequestBody @Valid NewProductDto newProductDto) {
+        CustomUserDetails authenticatedUser = (CustomUserDetails) SecurityContextHolder
+                .getContext().getAuthentication().getPrincipal();
+        RestaurantManager restaurantManager = restaurantManagerService.getByUserId(authenticatedUser.getId());
+        ViewRestaurantDto myRestaurant = restaurantService.getByRestaurantManagerId(restaurantManager.getRestaurantManagerId());
 
-        Product product = productService.addNewProduct(nameProduct, price, restaurantId);
+        Product product = productService.addNewProduct(newProductDto, myRestaurant.getId());
 
         return ResponseEntity.ok().body(ProductMapper.ProductToGetProductListDto(product));
     }
