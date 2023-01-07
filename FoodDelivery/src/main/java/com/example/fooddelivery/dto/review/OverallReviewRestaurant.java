@@ -7,6 +7,8 @@ import java.util.List;
 @Data
 public class OverallReviewRestaurant {
 
+    private Integer restaurantId;
+
     private String restaurantName;
 
     private String address;

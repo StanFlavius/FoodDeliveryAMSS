@@ -77,11 +77,12 @@ public class ReviewService {
         }
 
         OverallReviewRestaurant overallReviewRestaurant = new OverallReviewRestaurant();
+        overallReviewRestaurant.setRestaurantId(restaurant.getRestaurantId());
         overallReviewRestaurant.setRestaurantName(restaurant.getName());
         overallReviewRestaurant.setRestaurantManager(restaurant.getRestaurantManager().getFirstName() + " " + restaurant.getRestaurantManager().getLastName());
         overallReviewRestaurant.setReviewList(reviewDtos);
         overallReviewRestaurant.setAddress(restaurant.getAddress());
-        overallReviewRestaurant.setTotalRating((double) (sumRatings / countRatings));
+        overallReviewRestaurant.setTotalRating(countRatings > 0 ? (double) (sumRatings / countRatings) : 0);
 
         return overallReviewRestaurant;
     }

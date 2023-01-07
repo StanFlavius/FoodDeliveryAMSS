@@ -10,9 +10,8 @@ import com.example.fooddelivery.repository.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class RestaurantService {
@@ -58,5 +57,10 @@ public class RestaurantService {
     public List<ViewRestaurantDto> getAll() {
         List<Restaurant> restaurants = restaurantRepository.findAll();
         return restaurantMapper.restaurantListToViewRestaurantList(restaurants);
+    }
+
+    public ViewRestaurantDto getByRestaurantManagerId(Integer id) {
+        Optional<Restaurant> restaurant = restaurantRepository.findByRestaurantManager_RestaurantManagerId(id);
+        return restaurant.map(value -> restaurantMapper.restaurantToViewRestaurantDto(value)).orElse(null);
     }
 }

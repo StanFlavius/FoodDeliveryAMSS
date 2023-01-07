@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RestaurantManagerRepository extends JpaRepository<RestaurantManager, Integer> {
+    RestaurantManager findByUserEntity_Id(Integer id);
 }

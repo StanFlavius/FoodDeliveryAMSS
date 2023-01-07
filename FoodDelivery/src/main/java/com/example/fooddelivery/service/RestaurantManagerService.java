@@ -44,4 +44,8 @@ public class RestaurantManagerService {
 
         return restaurantManagerRepository.save(restaurantManager);
     }
+
+    public RestaurantManager getByUserId(Integer userId) {
+        return restaurantManagerRepository.findByUserEntity_Id(userId);
+    }
 }

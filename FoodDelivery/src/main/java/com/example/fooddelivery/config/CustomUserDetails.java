@@ -9,12 +9,14 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class CustomUserDetails implements UserDetails {
+    private Integer id;
     private String login;
     private String password;
     private Collection<? extends GrantedAuthority> grantedAuthorities;
 
     public static CustomUserDetails fromUserEntityToCustomUserDetails(UserEntity userEntity) {
         CustomUserDetails c = new CustomUserDetails();
+        c.id = userEntity.getId();
         c.login = userEntity.getEmail();
         c.password = userEntity.getPassword();
         c.grantedAuthorities = Collections.singletonList(new SimpleGrantedAuthority(userEntity.getRoleEntity().getName()));
@@ -25,6 +27,8 @@ public class CustomUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return grantedAuthorities;
     }
+
+    public Integer getId() { return id; }
 
     @Override
     public String getPassword() {
