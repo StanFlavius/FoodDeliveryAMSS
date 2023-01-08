@@ -6,6 +6,7 @@ import java.util.List;
 
 @Data
 public class GetProductListDto {
+    private Integer productId;
 
     private String productName;
 

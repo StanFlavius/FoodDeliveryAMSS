@@ -1,6 +1,7 @@
 package com.example.fooddelivery.controller;
 
 import com.example.fooddelivery.config.CustomUserDetails;
+import com.example.fooddelivery.dto.product.EditProductDto;
 import com.example.fooddelivery.dto.product.EditProductQuantityDto;
 import com.example.fooddelivery.dto.product.GetProductListDto;
 import com.example.fooddelivery.dto.product.NewProductDto;
@@ -23,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -70,6 +72,18 @@ public class ProductController {
         return ResponseEntity.ok().body(ProductMapper.ProductToGetProductListDto(product));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity update(
+            @PathVariable Integer id,
+            @RequestBody @Valid EditProductDto editProductDto
+            ) {
+        boolean updateSucceeded = productService.update(id, editProductDto);
+        if (!updateSucceeded) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().build();
+    }
+
     @ApiOperation(value = "EDIT QUANTITIES OF PRODUCTS")
     @ApiResponses(value = {
             @ApiResponse(code = 500, message = "Internal server error"),
@@ -77,7 +91,7 @@ public class ProductController {
             @ApiResponse(code = 400, message = "Invalid request"),
             @ApiResponse(code = 404, message = "Specified resource does not exist")
     })
-    @PutMapping("/{restaurantId}")
+    @PutMapping("/quantity/{restaurantId}")
     public ResponseEntity<List<GetProductListDto>> editProductsQuantity(@PathVariable Integer restaurantId,
                                                                         @RequestBody @Valid List<EditProductQuantityDto> productList) {
 
@@ -95,10 +109,9 @@ public class ProductController {
             @ApiResponse(code = 400, message = "Invalid request"),
             @ApiResponse(code = 404, message = "Specified resource does not exist")
     })
-    @DeleteMapping("/{productId}/{restaurantId}")
-    public ResponseEntity<String> deleteProduct(@PathVariable Integer productId,
-                                                @PathVariable Integer restaurantId) {
-        productService.deleteProduct(productId, restaurantId);
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<String> deleteProduct(@PathVariable Integer productId) {
+        productService.deleteProduct(productId);
 
         return ResponseEntity.ok().body("Product deleted");
     }

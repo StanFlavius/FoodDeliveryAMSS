@@ -1,5 +1,6 @@
 package com.example.fooddelivery.service;
 
+import com.example.fooddelivery.dto.product.EditProductDto;
 import com.example.fooddelivery.dto.product.EditProductQuantityDto;
 import com.example.fooddelivery.dto.product.GetProductListDto;
 import com.example.fooddelivery.dto.product.NewProductDto;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +50,25 @@ public class ProductService {
         return product;
     }
 
+    @Transactional
+    public boolean update(Integer id, EditProductDto editProductDto) {
+        Product product = productRepository.findById(id).orElse(null);
+        if (product != null) {
+            if (editProductDto.getName() != null) {
+                product.setName(editProductDto.getName());
+            }
+            if (editProductDto.getQuantity() != null) {
+                product.setQuantity(editProductDto.getQuantity());
+            }
+            if (editProductDto.getPrice() != null) {
+                product.setPrice(editProductDto.getPrice());
+            }
+            productRepository.save(product);
+            return true;
+        }
+        return false;
+    }
+
     public List<Product> editProductsQuantity(List<EditProductQuantityDto> productList, Integer restaurantId){
         Restaurant restaurant = restaurantRepository.getById(restaurantId);
 
@@ -69,10 +90,10 @@ public class ProductService {
         return productArrayList;
     }
 
-    public void deleteProduct (Integer productId, Integer restaurantId){
-        Product productExist = productRepository.findByProductIdAndRestaurant(productId, restaurantRepository.getById(restaurantId));
-
-        productRepository.delete(productExist);
+    public void deleteProduct (Integer productId) {
+        productRepository
+                .findById(productId)
+                .ifPresent(product -> productRepository.delete(product));
     }
 
     public List<GetProductListDto> getProducts (){
@@ -100,6 +121,7 @@ public class ProductService {
 
         for (Product p:productList) {
             GetProductListDto advProduct = new GetProductListDto();
+            advProduct.setProductId(p.getProductId());
             advProduct.setProductName(p.getName());
             advProduct.setQuantity(p.getQuantity());
             advProduct.setPrice(p.getPrice());
