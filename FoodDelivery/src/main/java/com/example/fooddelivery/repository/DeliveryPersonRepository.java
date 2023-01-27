@@ -7,4 +7,6 @@ public interface DeliveryPersonRepository extends JpaRepository<DeliveryPerson, 
     DeliveryPerson findByDeliveryPersonId(Integer id);
 
     DeliveryPerson findDeliveryPersonByUserEntity(Integer id);
+
+    DeliveryPerson findByUserEntity_Id(Integer userId);
 }

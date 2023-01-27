@@ -120,12 +120,12 @@ public class OrderService {
         return orderResponseDto;
     }
 
-    public CustomOrder editStatus(Integer orderId, Integer deliveryId) {
+    public CustomOrder editStatus(Integer orderId, Integer userId) {
         CustomOrder order = orderRepository.findByOrderId(orderId);
 
         if(order.getStatus().equals("preparing")){
             order.setStatus("on the way");
-            DeliveryPerson deliveryPerson = deliveryPersonRepository.findByDeliveryPersonId(deliveryId);
+            DeliveryPerson deliveryPerson = deliveryPersonRepository.findByUserEntity_Id(userId);
             deliveryPerson.setAvailability("NOT AVAILABLE");
             deliveryPersonRepository.save(deliveryPerson);
             order.setDeliveryPerson(deliveryPerson);
@@ -133,7 +133,7 @@ public class OrderService {
         }
         else if(order.getStatus().equals("on the way")){
             order.setStatus("delivered");
-            DeliveryPerson deliveryPerson = deliveryPersonRepository.findByDeliveryPersonId(deliveryId);
+            DeliveryPerson deliveryPerson = deliveryPersonRepository.findByUserEntity_Id(userId);
             deliveryPerson.setAvailability("AVAILABLE");
             deliveryPersonRepository.save(deliveryPerson);
             order.setStatusTime(new Timestamp(System.currentTimeMillis()));
@@ -221,12 +221,12 @@ public class OrderService {
         return orderAdminDtos;
     }
 
-    public List<OrderAdminDto> getAllOrders() {
+    public List<OrderResponseDto> getAllOrders() {
         List<CustomOrder> filteredOrderList = orderRepository.findAll();
 
-        List<OrderAdminDto> orderAdminDtos = new ArrayList<>();
+        List<OrderResponseDto> orderAdminDtos = new ArrayList<>();
         for (CustomOrder order : filteredOrderList) {
-            orderAdminDtos.add(orderMapper.OrderToOrderAdminDto(order));
+            orderAdminDtos.add(orderMapper.OrderToOrderResponseDto(order));
         }
 
         return orderAdminDtos;

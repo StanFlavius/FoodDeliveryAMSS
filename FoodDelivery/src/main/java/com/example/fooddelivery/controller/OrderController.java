@@ -5,8 +5,10 @@ import com.example.fooddelivery.dto.OrderDelivery.ProductOrderDto;
 import com.example.fooddelivery.dto.OrderDelivery.OrderResponseDto;
 import com.example.fooddelivery.mapper.OrderMapper;
 import com.example.fooddelivery.model.CustomOrder;
+import com.example.fooddelivery.model.RestaurantManager;
 import com.example.fooddelivery.repository.NormalUserRepository;
 import com.example.fooddelivery.service.OrderService;
+import com.example.fooddelivery.service.RestaurantManagerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -37,6 +39,9 @@ public class OrderController {
     @Autowired
     NormalUserRepository normalUserRepository;
 
+    @Autowired
+    RestaurantManagerService restaurantManagerService;
+
     @ApiOperation(value = "MAKE AN ORDER")
     @ResponseStatus(HttpStatus.CREATED)
     @ApiResponses(value = {
@@ -63,9 +68,9 @@ public class OrderController {
             @ApiResponse(code = 400, message = "Invalid request"),
             @ApiResponse(code = 404, message = "Specified resource does not exist")
     })
-    @PutMapping("/edit/{orderId}/{deliveryId}")
-    public ResponseEntity<OrderResponseDto> editOrderStatus(@PathVariable Integer orderId, @PathVariable Integer deliveryId){
-        CustomOrder order = orderService.editStatus(orderId, deliveryId);
+    @PutMapping("/edit/{orderId}/{userId}")
+    public ResponseEntity<OrderResponseDto> editOrderStatus(@PathVariable Integer orderId, @PathVariable Integer userId){
+        CustomOrder order = orderService.editStatus(orderId, userId);
 
         return ResponseEntity.ok().body(orderMapper.OrderToOrderResponseDto(order));
     }
@@ -85,9 +90,10 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getCurrentOrdersPerUser(userId));
     }
 
-    @GetMapping("/allRest/{restaurantManagerId}")
-    public ResponseEntity<List<OrderResponseDto>> getAllOrdersOfRestaurant(@PathVariable Integer restaurantManagerId){
-        return ResponseEntity.ok(orderService.getOrdersPerRestaurant(restaurantManagerId));
+    @GetMapping("/allRest/{userId}")
+    public ResponseEntity<List<OrderResponseDto>> getAllOrdersOfRestaurant(@PathVariable Integer userId){
+        RestaurantManager restaurantManager = restaurantManagerService.getByUserId(userId);
+        return ResponseEntity.ok(orderService.getOrdersPerRestaurant(restaurantManager.getRestaurantManagerId()));
     }
 
     @GetMapping("/ordersToday")
@@ -96,7 +102,7 @@ public class OrderController {
     }
 
     @GetMapping("/allOrders")
-    public ResponseEntity<List<OrderAdminDto>> getAllOrders(){
+    public ResponseEntity<List<OrderResponseDto>> getAllOrders(){
         return ResponseEntity.ok(orderService.getAllOrders());
     }
 }
