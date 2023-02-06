@@ -1,4 +1,4 @@
-package com.example.fooddelivery.repository;
+package com.example.fooddelivery.repositoryJpa;
 
 import com.example.fooddelivery.model.Restaurant;
 import com.example.fooddelivery.model.RestaurantManager;
@@ -10,7 +10,4 @@ import java.util.Optional;
 @Repository
 public interface RestaurantRepository extends JpaRepository<Restaurant, Integer> {
 
-    Restaurant findByRestaurantManager(RestaurantManager restaurantManager);
-
-    Optional<Restaurant> findByRestaurantManager_RestaurantManagerId(Integer id);
 }

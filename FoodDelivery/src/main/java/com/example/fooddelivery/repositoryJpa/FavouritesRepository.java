@@ -1,4 +1,4 @@
-package com.example.fooddelivery.repository;
+package com.example.fooddelivery.repositoryJpa;
 
 import com.example.fooddelivery.model.Favourites;
 import com.example.fooddelivery.model.NormalUser;
@@ -10,7 +10,5 @@ import java.util.List;
 
 @Repository
 public interface FavouritesRepository extends JpaRepository<Favourites, Integer> {
-    Favourites findByRestaurantAndUser(Restaurant restaurant, NormalUser user);
 
-    List<Favourites> findByUser(NormalUser normalUser);
 }

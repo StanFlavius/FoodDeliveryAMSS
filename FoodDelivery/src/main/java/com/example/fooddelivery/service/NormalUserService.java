@@ -1,23 +1,21 @@
 package com.example.fooddelivery.service;
 
 import com.example.fooddelivery.dto.auth.RegistrationRequest;
-import com.example.fooddelivery.dto.user.EditUserLocationDto;
 import com.example.fooddelivery.dto.user.EditUserPasswordDto;
 import com.example.fooddelivery.exception.userExp.AuthenticationRefused;
 import com.example.fooddelivery.exception.userExp.EmailExist;
 import com.example.fooddelivery.model.RoleEntity;
 import com.example.fooddelivery.model.UserEntity;
 import com.example.fooddelivery.model.NormalUser;
-import com.example.fooddelivery.repository.RoleEntityRepository;
-import com.example.fooddelivery.repository.UserEntityRepository;
-import com.example.fooddelivery.repository.NormalUserRepository;
+import com.example.fooddelivery.repositoryEM.RoleEntityRepositoryEM;
+import com.example.fooddelivery.repositoryEM.UserEntityRepositoryEM;
+import com.example.fooddelivery.repositoryJpa.RoleEntityRepository;
+import com.example.fooddelivery.repositoryJpa.UserEntityRepository;
+import com.example.fooddelivery.repositoryJpa.NormalUserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -30,9 +28,13 @@ public class NormalUserService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private NormalUserRepository normalUserRepository;
+    @Autowired
+    private UserEntityRepositoryEM userEntityRepositoryEM;
+    @Autowired
+    private RoleEntityRepositoryEM roleEntityRepositoryEM;
 
     public UserEntity saveUser(RegistrationRequest registrationRequest, String role) {
-        UserEntity userExistE = userEntityRepository.findByEmail(registrationRequest.getEmail());
+        UserEntity userExistE = userEntityRepositoryEM.findByEmail(registrationRequest.getEmail());
         if(userExistE != null)
             throw new EmailExist("A user with email " + registrationRequest.getEmail() + " already exists");
 
@@ -40,7 +42,7 @@ public class NormalUserService {
         userEntity.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
         userEntity.setEmail(registrationRequest.getEmail());
 
-        RoleEntity userRole = roleEntityRepository.findByName(role);
+        RoleEntity userRole = roleEntityRepositoryEM.findByName(role);
         userEntity.setRoleEntity(userRole);
 
         NormalUser normalUser = new NormalUser();
@@ -54,11 +56,11 @@ public class NormalUserService {
     }
 
     public UserEntity findByLogin(String login) {
-        return userEntityRepository.findByEmail(login);
+        return userEntityRepositoryEM.findByEmail(login);
     }
 
     public UserEntity findByLoginAndPassword(String login, String password) {
-        UserEntity userEntity = userEntityRepository.findByEmail(login);
+        UserEntity userEntity = userEntityRepositoryEM.findByEmail(login);
         if (userEntity != null) {
             if (passwordEncoder.matches(password, userEntity.getPassword())) {
                 return userEntity;

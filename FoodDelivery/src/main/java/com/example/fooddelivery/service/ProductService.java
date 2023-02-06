@@ -4,22 +4,20 @@ import com.example.fooddelivery.dto.product.EditProductDto;
 import com.example.fooddelivery.dto.product.EditProductQuantityDto;
 import com.example.fooddelivery.dto.product.GetProductListDto;
 import com.example.fooddelivery.dto.product.NewProductDto;
-import com.example.fooddelivery.exception.productExp.MenuHasProductToBeDeleted;
 import com.example.fooddelivery.exception.productExp.ProductAlreadyExist;
 import com.example.fooddelivery.exception.productExp.ProductDoesNotExist;
 import com.example.fooddelivery.model.Product;
 import com.example.fooddelivery.model.Restaurant;
-import com.example.fooddelivery.repository.ProductRepository;
-import com.example.fooddelivery.repository.RestaurantRepository;
+import com.example.fooddelivery.repositoryEM.ProductRepositoryEM;
+import com.example.fooddelivery.repositoryJpa.ProductRepository;
+import com.example.fooddelivery.repositoryJpa.RestaurantRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -31,11 +29,14 @@ public class ProductService {
     @Autowired
     RestaurantRepository restaurantRepository;
 
+    @Autowired
+    ProductRepositoryEM productRepositoryEM;
+
     public Product addNewProduct(NewProductDto newProduct, Integer restaurantId) {
 
         Restaurant restaurant = restaurantRepository.getById(restaurantId);
 
-        Product productExist = productRepository.findByNameAndRestaurant(newProduct.getName(), restaurant);
+        Product productExist = productRepositoryEM.findByNameAndRestaurant(newProduct.getName(), restaurant);
         if (productExist != null)
             throw new ProductAlreadyExist("Product " + newProduct.getName() + " already exists in " + restaurant.getName());
 
@@ -73,7 +74,7 @@ public class ProductService {
         Restaurant restaurant = restaurantRepository.getById(restaurantId);
 
         for (EditProductQuantityDto p: productList) {
-            Product productExist = productRepository.findByNameAndRestaurant(p.getProductName(), restaurant);
+            Product productExist = productRepositoryEM.findByNameAndRestaurant(p.getProductName(), restaurant);
             if (productExist == null)
                 throw new ProductDoesNotExist("Product " + p.getProductName() + " does not exist in " + restaurant.getName());
         }
@@ -81,7 +82,7 @@ public class ProductService {
         List<Product> productArrayList = new ArrayList<>();
 
         for (EditProductQuantityDto p: productList) {
-            Product productExist = productRepository.findByNameAndRestaurant(p.getProductName(), restaurant);
+            Product productExist = productRepositoryEM.findByNameAndRestaurant(p.getProductName(), restaurant);
             productExist.setQuantity(productExist.getQuantity() + p.getSuplQuantity());
             productRepository.save(productExist);
             productArrayList.add(productExist);
@@ -116,7 +117,7 @@ public class ProductService {
     public List<GetProductListDto> getProductsPerRestaurant (Integer restaurantId){
         Restaurant restaurant = restaurantRepository.getById(restaurantId);
 
-        List<Product> productList = productRepository.findByRestaurant(restaurant);
+        List<Product> productList = productRepositoryEM.findByRestaurant(restaurant);
         List<GetProductListDto> advProductList = new ArrayList<>();
 
         for (Product p:productList) {

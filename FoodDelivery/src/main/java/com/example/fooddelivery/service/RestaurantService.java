@@ -6,7 +6,8 @@ import com.example.fooddelivery.dto.restaurant.ViewRestaurantDto;
 import com.example.fooddelivery.mapper.RestaurantMapper;
 import com.example.fooddelivery.model.Restaurant;
 import com.example.fooddelivery.model.RestaurantManager;
-import com.example.fooddelivery.repository.RestaurantRepository;
+import com.example.fooddelivery.repositoryEM.RestaurantRepositoryEM;
+import com.example.fooddelivery.repositoryJpa.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,9 @@ public class RestaurantService {
 
     @Autowired
     private RestaurantMapper restaurantMapper;
+
+    @Autowired
+    private RestaurantRepositoryEM restaurantRepositoryEM;
 
     public Restaurant addNewRestaurant(AddRestaurantDto restaurantDto){
         Restaurant restaurant = new Restaurant();
@@ -60,7 +64,7 @@ public class RestaurantService {
     }
 
     public ViewRestaurantDto getByRestaurantManagerId(Integer id) {
-        Optional<Restaurant> restaurant = restaurantRepository.findByRestaurantManager_RestaurantManagerId(id);
+        Optional<Restaurant> restaurant = restaurantRepositoryEM.findByRestaurantManager_RestaurantManagerId(id);
         return restaurant.map(value -> restaurantMapper.restaurantToViewRestaurantDto(value)).orElse(null);
     }
 }

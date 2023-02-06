@@ -7,10 +7,12 @@ import com.example.fooddelivery.mapper.ReviewMapper;
 import com.example.fooddelivery.model.Restaurant;
 import com.example.fooddelivery.model.RestaurantManager;
 import com.example.fooddelivery.model.Review;
-import com.example.fooddelivery.repository.NormalUserRepository;
-import com.example.fooddelivery.repository.RestaurantManagerRepository;
-import com.example.fooddelivery.repository.RestaurantRepository;
-import com.example.fooddelivery.repository.ReviewRepository;
+import com.example.fooddelivery.repositoryEM.RestaurantRepositoryEM;
+import com.example.fooddelivery.repositoryEM.ReviewRepositoryEM;
+import com.example.fooddelivery.repositoryJpa.NormalUserRepository;
+import com.example.fooddelivery.repositoryJpa.RestaurantManagerRepository;
+import com.example.fooddelivery.repositoryJpa.RestaurantRepository;
+import com.example.fooddelivery.repositoryJpa.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +37,12 @@ public class ReviewService {
     @Autowired
     ReviewMapper reviewMapper;
 
+    @Autowired
+    RestaurantRepositoryEM restaurantRepositoryEM;
+
+    @Autowired
+    ReviewRepositoryEM reviewRepositoryEM;
+
     public Review addNewReview(AddReviewDto reviewDto, Integer userId, Integer restaurantId){
         Review review = new Review();
         review.setRating(reviewDto.getRating());
@@ -48,9 +56,9 @@ public class ReviewService {
     public List<ResponseReviewDto> getReviewsPerRestaurantManager(Integer restaurantManagerId){
         RestaurantManager restaurantManager = restaurantManagerRepository.getById(restaurantManagerId);
 
-        Restaurant restaurant = restaurantRepository.findByRestaurantManager(restaurantManager);
+        Restaurant restaurant = restaurantRepositoryEM.findByRestaurantManager(restaurantManager);
 
-        List<Review> reviewList = reviewRepository.findByRestaurant(restaurant);
+        List<Review> reviewList = reviewRepositoryEM.findByRestaurant(restaurant);
 
         List<ResponseReviewDto> reviewDtos = new ArrayList<>();
         for (Review review : reviewList) {
@@ -64,7 +72,7 @@ public class ReviewService {
     public OverallReviewRestaurant getOverallReviewOfRestaurant(Integer restaurantId){
         Restaurant restaurant = restaurantRepository.getById(restaurantId);
 
-        List<Review> reviewList = reviewRepository.findByRestaurant(restaurant);
+        List<Review> reviewList = reviewRepositoryEM.findByRestaurant(restaurant);
 
         Integer sumRatings = 0;
         Integer countRatings = 0;

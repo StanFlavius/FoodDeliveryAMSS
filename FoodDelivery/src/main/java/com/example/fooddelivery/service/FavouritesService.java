@@ -5,9 +5,10 @@ import com.example.fooddelivery.exception.userExp.EmailExist;
 import com.example.fooddelivery.model.Favourites;
 import com.example.fooddelivery.model.NormalUser;
 import com.example.fooddelivery.model.Restaurant;
-import com.example.fooddelivery.repository.FavouritesRepository;
-import com.example.fooddelivery.repository.NormalUserRepository;
-import com.example.fooddelivery.repository.RestaurantRepository;
+import com.example.fooddelivery.repositoryEM.FavouritesRepositoryEM;
+import com.example.fooddelivery.repositoryJpa.FavouritesRepository;
+import com.example.fooddelivery.repositoryJpa.NormalUserRepository;
+import com.example.fooddelivery.repositoryJpa.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,10 +30,13 @@ public class FavouritesService {
     @Autowired
     private ReviewService reviewService;
 
+    @Autowired
+    private FavouritesRepositoryEM favouritesRepositoryEM;
+
     public Favourites addFavouriteRestaurant(Integer userId, Integer restaurantId){
         Restaurant restaurant = restaurantRepository.getById(restaurantId);
         NormalUser normalUser = normalUserRepository.getById(userId);
-        Favourites favourites = favouritesRepository.findByRestaurantAndUser(restaurant, normalUser);
+        Favourites favourites = favouritesRepositoryEM.findByRestaurantAndUser(restaurant, normalUser);
         if(favourites != null){
             throw new EmailExist("This user already has this restaurant in his favourites list");
         }
@@ -47,13 +51,13 @@ public class FavouritesService {
     public void deleteFavouriteRestaurant(Integer userId, Integer restaurantId){
         Restaurant restaurant = restaurantRepository.getById(restaurantId);
         NormalUser normalUser = normalUserRepository.getById(userId);
-        Favourites favourites = favouritesRepository.findByRestaurantAndUser(restaurant, normalUser);
+        Favourites favourites = favouritesRepositoryEM.findByRestaurantAndUser(restaurant, normalUser);
 
         favouritesRepository.delete(favourites);
     }
 
     public List<OverallReviewRestaurant> getFavs(Integer userId) {
-        List<Favourites> favRestaurants = favouritesRepository.findByUser(normalUserRepository.getById(userId));
+        List<Favourites> favRestaurants = favouritesRepositoryEM.findByUser(normalUserRepository.getById(userId));
 
         List<Restaurant> restaurants = new ArrayList<>();
         for (Favourites fav:favRestaurants) {

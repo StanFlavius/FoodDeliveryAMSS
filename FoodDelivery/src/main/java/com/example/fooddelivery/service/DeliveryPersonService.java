@@ -1,15 +1,13 @@
 package com.example.fooddelivery.service;
 
-import com.example.fooddelivery.dto.auth.RegistrationRequest;
 import com.example.fooddelivery.dto.delivery.AddDeliveryPersonRequestBodyDto;
-import com.example.fooddelivery.dto.delivery.DeliveryGuyDataDto;
-import com.example.fooddelivery.dto.delivery.OrderDto;
-import com.example.fooddelivery.dto.delivery.SalarySituation;
 import com.example.fooddelivery.exception.DeliveryPerson.IncorrectScheduleExp;
 import com.example.fooddelivery.exception.userExp.EmailExist;
 import com.example.fooddelivery.model.*;
-import com.example.fooddelivery.repository.DeliveryPersonRepository;
-import com.example.fooddelivery.repository.RoleEntityRepository;
+import com.example.fooddelivery.repositoryEM.DeliveryPersonRepositoryEM;
+import com.example.fooddelivery.repositoryEM.RoleEntityRepositoryEM;
+import com.example.fooddelivery.repositoryJpa.DeliveryPersonRepository;
+import com.example.fooddelivery.repositoryJpa.RoleEntityRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +28,12 @@ public class DeliveryPersonService {
 
     @Autowired
     private RoleEntityRepository roleEntityRepository;
+
+    @Autowired
+    private RoleEntityRepositoryEM roleEntityRepositoryEM;
+
+    @Autowired
+    private DeliveryPersonRepositoryEM deliveryPersonRepositoryEM;
 
     public DeliveryPerson addDelivery(AddDeliveryPersonRequestBodyDto request) {
         if(request.getScheduleStart() > 20)
@@ -53,7 +57,7 @@ public class DeliveryPersonService {
         userEntity.setPassword(passwordEncoder.encode("123456"));
         userEntity.setEmail(request.getEmail());
 
-        RoleEntity userRole = roleEntityRepository.findByName("ROLE_DELIVERY");
+        RoleEntity userRole = roleEntityRepositoryEM.findByName("ROLE_DELIVERY");
         userEntity.setRoleEntity(userRole);
 
         DeliveryPerson deliveryPerson = new DeliveryPerson();
@@ -81,7 +85,7 @@ public class DeliveryPersonService {
     }
 
     public DeliveryPerson editSchedule(Integer id, Integer schStart, Integer schStop){
-        DeliveryPerson deliveryPerson = deliveryPersonRepository.findByDeliveryPersonId(id);
+        DeliveryPerson deliveryPerson = deliveryPersonRepositoryEM.findByDeliveryPersonId(id);
         if(deliveryPerson == null)
             throw new IncorrectScheduleExp("Delivery person with id: " + id.toString() + " does not exist");
 

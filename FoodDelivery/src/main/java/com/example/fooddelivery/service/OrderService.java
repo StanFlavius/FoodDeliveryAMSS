@@ -7,12 +7,15 @@ import com.example.fooddelivery.exception.orderExp.NoDeliveryPersonAvailvable;
 import com.example.fooddelivery.exception.orderExp.NoMoreProducts;
 import com.example.fooddelivery.mapper.OrderMapper;
 import com.example.fooddelivery.model.*;
-import com.example.fooddelivery.repository.*;
+import com.example.fooddelivery.repositoryEM.DeliveryPersonRepositoryEM;
+import com.example.fooddelivery.repositoryEM.OrderRepositoryEM;
+import com.example.fooddelivery.repositoryEM.ProductRepositoryEM;
+import com.example.fooddelivery.repositoryEM.RestaurantRepositoryEM;
+import com.example.fooddelivery.repositoryJpa.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -50,6 +53,20 @@ public class OrderService {
     @Autowired
     RestaurantManagerRepository restaurantManagerRepository;
 
+    @Autowired
+    DeliveryPersonRepositoryEM deliveryPersonRepositoryEM;
+
+    @Autowired
+    ProductRepositoryEM productRepositoryEM;
+
+    @Autowired
+    OrderRepositoryEM orderRepositoryEM;
+
+    @Autowired
+    RestaurantRepositoryEM restaurantRepositoryEM;
+
+
+
     public OrderResponseDto addNewOrder(Integer userId, Integer restaurantId, String address, List<ProductOrderDto> productOrderList) {
         //check available delivery person
         Calendar now = Calendar.getInstance();
@@ -75,11 +92,11 @@ public class OrderService {
         for (ProductOrderDto productOrder : productOrderList){
             String productName = productOrder.getProduct();
             Integer quantity = productOrder.getQuantity();
-            Product product = productRepository.findByNameAndRestaurant(productName, restaurant);
+            Product product = productRepositoryEM.findByNameAndRestaurant(productName, restaurant);
             Integer quantityDB = product.getQuantity();
             if(quantity > quantityDB)
                 throw new NoMoreProducts("We don't have resources anymore: product " + productName + " is not available in " + restaurant.getName());
-            totalCost += (quantity * productRepository.findByName(productName).getPrice());
+            totalCost += (quantity * productRepositoryEM.findByName(productName).getPrice());
         }
 
         CustomOrder customOrder = new CustomOrder();
@@ -98,7 +115,7 @@ public class OrderService {
             String productName = productOrder.getProduct();
             productList.add(productName);
             Integer quantity = productOrder.getQuantity();
-            Product product = productRepository.findByName(productName);
+            Product product = productRepositoryEM.findByName(productName);
             product.setQuantity(product.getQuantity() - productOrder.getQuantity());
             OrderProduct orderProduct = new OrderProduct();
             orderProduct.setProduct(product);
@@ -121,11 +138,11 @@ public class OrderService {
     }
 
     public CustomOrder editStatus(Integer orderId, Integer userId) {
-        CustomOrder order = orderRepository.findByOrderId(orderId);
+        CustomOrder order = orderRepositoryEM.findByOrderId(orderId);
 
         if(order.getStatus().equals("preparing")){
             order.setStatus("on the way");
-            DeliveryPerson deliveryPerson = deliveryPersonRepository.findByUserEntity_Id(userId);
+            DeliveryPerson deliveryPerson = deliveryPersonRepositoryEM.findByUserEntity_Id(userId);
             deliveryPerson.setAvailability("NOT AVAILABLE");
             deliveryPersonRepository.save(deliveryPerson);
             order.setDeliveryPerson(deliveryPerson);
@@ -133,7 +150,7 @@ public class OrderService {
         }
         else if(order.getStatus().equals("on the way")){
             order.setStatus("delivered");
-            DeliveryPerson deliveryPerson = deliveryPersonRepository.findByUserEntity_Id(userId);
+            DeliveryPerson deliveryPerson = deliveryPersonRepositoryEM.findByUserEntity_Id(userId);
             deliveryPerson.setAvailability("AVAILABLE");
             deliveryPersonRepository.save(deliveryPerson);
             order.setStatusTime(new Timestamp(System.currentTimeMillis()));
@@ -143,7 +160,7 @@ public class OrderService {
     }
 
     public List<OrderResponseDto> getOrdersForDelivery(){
-        List<CustomOrder> orderList = orderRepository.findByStatus("preparing");
+        List<CustomOrder> orderList = orderRepositoryEM.findByStatus("preparing");
 
         List<OrderResponseDto> orderResponseDtoList = new ArrayList<>();
 
@@ -157,7 +174,7 @@ public class OrderService {
     public List<OrderResponseDto> getOrdersPerUser(Integer userId){
         NormalUser normalUser = normalUserRepository.getById(userId);
 
-        List<CustomOrder> orderList = orderRepository.findByUser(normalUser);
+        List<CustomOrder> orderList = orderRepositoryEM.findByUser(normalUser);
 
         List<OrderResponseDto> orderResponseDtoList = new ArrayList<>();
 
@@ -171,7 +188,7 @@ public class OrderService {
     public List<OrderResponseDto> getCurrentOrdersPerUser(Integer userId){
         NormalUser normalUser = normalUserRepository.getById(userId);
 
-        List<CustomOrder> orderList = orderRepository.findByUserAndStatus(normalUser, "pending");
+        List<CustomOrder> orderList = orderRepositoryEM.findByUserAndStatus(normalUser, "pending");
 
         List<OrderResponseDto> orderResponseDtoList = new ArrayList<>();
 
@@ -185,9 +202,9 @@ public class OrderService {
     public List<OrderResponseDto> getOrdersPerRestaurant(Integer restaurantManagerId){
         RestaurantManager restaurantManager = restaurantManagerRepository.getById(restaurantManagerId);
 
-        Restaurant restaurant = restaurantRepository.findByRestaurantManager(restaurantManager);
+        Restaurant restaurant = restaurantRepositoryEM.findByRestaurantManager(restaurantManager);
 
-        List<CustomOrder> orderList = orderRepository.findByRestaurant(restaurant);
+        List<CustomOrder> orderList = orderRepositoryEM.findByRestaurant(restaurant);
 
         List<OrderResponseDto> orderResponseDtoList = new ArrayList<>();
 

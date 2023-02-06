@@ -1,11 +1,13 @@
 package com.example.fooddelivery.service;
 
 import com.example.fooddelivery.dto.RestaurantManager.AddRestaurantManagerDto;
-import com.example.fooddelivery.dto.auth.RegistrationRequest;
 import com.example.fooddelivery.exception.userExp.EmailExist;
 import com.example.fooddelivery.model.*;
-import com.example.fooddelivery.repository.RestaurantManagerRepository;
-import com.example.fooddelivery.repository.RoleEntityRepository;
+import com.example.fooddelivery.repositoryEM.RestaurantManagerRepositoryEM;
+import com.example.fooddelivery.repositoryEM.RestaurantRepositoryEM;
+import com.example.fooddelivery.repositoryEM.RoleEntityRepositoryEM;
+import com.example.fooddelivery.repositoryJpa.RestaurantManagerRepository;
+import com.example.fooddelivery.repositoryJpa.RoleEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,12 @@ public class RestaurantManagerService {
     @Autowired
     private RoleEntityRepository roleEntityRepository;
 
+    @Autowired
+    private RoleEntityRepositoryEM roleEntityRepositoryEM;
+
+    @Autowired
+    private RestaurantManagerRepositoryEM restaurantManagerRepositoryEM;
+
     public RestaurantManager addNewRestaurantManager(AddRestaurantManagerDto restaurantManagerDto){
         UserEntity userEntity = normalUserService.findByLogin(restaurantManagerDto.getEmail());
         if (userEntity != null)
@@ -34,7 +42,7 @@ public class RestaurantManagerService {
         userEntity.setPassword(passwordEncoder.encode("123456"));
         userEntity.setEmail(restaurantManagerDto.getEmail());
 
-        RoleEntity userRole = roleEntityRepository.findByName("ROLE_RESTMAN");
+        RoleEntity userRole = roleEntityRepositoryEM.findByName("ROLE_RESTMAN");
         userEntity.setRoleEntity(userRole);
 
         RestaurantManager restaurantManager = new RestaurantManager();
@@ -46,6 +54,6 @@ public class RestaurantManagerService {
     }
 
     public RestaurantManager getByUserId(Integer userId) {
-        return restaurantManagerRepository.findByUserEntity_Id(userId);
+        return restaurantManagerRepositoryEM.findByUserEntity_Id(userId);
     }
 }

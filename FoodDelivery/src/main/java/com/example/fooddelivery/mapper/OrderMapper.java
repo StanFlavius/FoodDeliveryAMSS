@@ -4,12 +4,10 @@ import com.example.fooddelivery.dto.OrderDelivery.OrderAdminDto;
 import com.example.fooddelivery.dto.OrderDelivery.OrderResponseDto;
 import com.example.fooddelivery.model.CustomOrder;
 import com.example.fooddelivery.model.OrderProduct;
-import com.example.fooddelivery.repository.OrderProductRepository;
+import com.example.fooddelivery.repositoryJpa.OrderProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 

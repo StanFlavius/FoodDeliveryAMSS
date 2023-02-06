@@ -1,4 +1,4 @@
-package com.example.fooddelivery.repository;
+package com.example.fooddelivery.repositoryJpa;
 
 import com.example.fooddelivery.model.CustomOrder;
 import com.example.fooddelivery.model.OrderProduct;
@@ -10,5 +10,4 @@ import java.util.List;
 @Repository
 public interface OrderProductRepository extends JpaRepository<OrderProduct, Integer> {
 
-    List<OrderProduct> getByCustomOrder(CustomOrder customOrder);
 }
