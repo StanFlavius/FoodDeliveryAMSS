@@ -4,6 +4,7 @@ import com.example.fooddelivery.dto.OrderDelivery.OrderAdminDto;
 import com.example.fooddelivery.dto.OrderDelivery.OrderResponseDto;
 import com.example.fooddelivery.model.CustomOrder;
 import com.example.fooddelivery.model.OrderProduct;
+import com.example.fooddelivery.repositoryEM.OrderProductRepositoryEM;
 import com.example.fooddelivery.repositoryJpa.OrderProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,9 @@ public class OrderMapper {
 
     @Autowired
     OrderProductRepository orderProductRepository;
+
+    @Autowired
+    OrderProductRepositoryEM orderProductRepositoryEM;
 
     public OrderResponseDto OrderToOrderResponseDto(CustomOrder customOrder){
 
@@ -36,7 +40,7 @@ public class OrderMapper {
         }
 
         List<String> productList = new ArrayList<>();
-        List<OrderProduct> orderProductList = orderProductRepository.getByCustomOrder(customOrder);
+        List<OrderProduct> orderProductList = orderProductRepositoryEM.getByCustomOrder(customOrder);
         for (OrderProduct orderProduct : orderProductList) {
             productList.add(orderProduct.getProduct().getName());
         }
