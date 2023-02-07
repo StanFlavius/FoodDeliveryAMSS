@@ -1,13 +1,13 @@
 package com.example.fooddelivery.controller;
 
+import com.example.fooddelivery.CurrentUser;
 import com.example.fooddelivery.config.jwt.JwtProvider;
 import com.example.fooddelivery.dto.auth.AuthRequest;
-import com.example.fooddelivery.dto.auth.AuthResponse;
 import com.example.fooddelivery.dto.auth.RegistrationRequest;
-import com.example.fooddelivery.exception.userExp.AuthenticationRefused;
+import com.example.fooddelivery.log.Logger;
 import com.example.fooddelivery.model.UserEntity;
-import com.example.fooddelivery.repository.RoleEntityRepository;
-import com.example.fooddelivery.repository.UserEntityRepository;
+import com.example.fooddelivery.repositoryJpa.RoleEntityRepository;
+import com.example.fooddelivery.repositoryJpa.UserEntityRepository;
 import com.example.fooddelivery.service.NormalUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,8 +22,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -94,6 +95,15 @@ public class AuthController {
         response.put("userId", userEntity.getId().toString());
         response.put("email", userEntity.getEmail());
         response.put("role", userEntity.getRoleEntity().getName());
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+
+        CurrentUser.getInstance().setCurrentUser(userEntity);
+
+        Logger.getInstance().logMsg(CurrentUser.getInstance().getUserId(), this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), dtf.format(now));
+
+
         return ResponseEntity.ok().body(response);
     }
 
@@ -106,6 +116,11 @@ public class AuthController {
     })
     @GetMapping("/admin/get")
     public String getAdmin() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+
+        Logger.getInstance().logMsg(CurrentUser.getInstance().getUserId(), this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), dtf.format(now));
+
         return "Hi admin";
     }
 
@@ -118,6 +133,11 @@ public class AuthController {
     })
     @GetMapping("/user/get")
     public String getUser() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+
+        Logger.getInstance().logMsg(CurrentUser.getInstance().getUserId(), this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), dtf.format(now));
+
         return "Hi user";
     }
 
@@ -130,6 +150,11 @@ public class AuthController {
     })
     @GetMapping("/del/get")
     public String getDelivery() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+
+        Logger.getInstance().logMsg(CurrentUser.getInstance().getUserId(), this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), dtf.format(now));
+
         return "Hi delivery";
     }
 
@@ -142,6 +167,11 @@ public class AuthController {
     })
     @GetMapping("/restman/get")
     public String getRestManager() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+
+        Logger.getInstance().logMsg(CurrentUser.getInstance().getUserId(), this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), dtf.format(now));
+
         return "Hi manager";
     }
 }

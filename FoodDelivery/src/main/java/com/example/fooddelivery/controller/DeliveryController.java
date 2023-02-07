@@ -1,9 +1,11 @@
 package com.example.fooddelivery.controller;
 
+import com.example.fooddelivery.CurrentUser;
 import com.example.fooddelivery.dto.delivery.AddDeliveryPersonRequestBodyDto;
 import com.example.fooddelivery.dto.delivery.AddDeliveryPersonResponse;
 import com.example.fooddelivery.dto.delivery.DeliveryGuyDataDto;
 import com.example.fooddelivery.dto.delivery.SalarySituation;
+import com.example.fooddelivery.log.Logger;
 import com.example.fooddelivery.mapper.DeliveryMapper;
 import com.example.fooddelivery.model.DeliveryPerson;
 import com.example.fooddelivery.service.DeliveryPersonService;
@@ -21,6 +23,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -47,6 +51,10 @@ public class DeliveryController {
     @PostMapping("")
     public ResponseEntity<AddDeliveryPersonResponse> addNewDeliveryPerson(@RequestBody @Valid AddDeliveryPersonRequestBodyDto delivery){
         DeliveryPerson deliveryPerson = deliveryPersonService.addDelivery(delivery);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+
+        Logger.getInstance().logMsg(CurrentUser.getInstance().getUserId(), this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), dtf.format(now));
 
         return ResponseEntity.ok().body(deliveryMapper.DeliveryPersonToAddDeliveryPersonResponse(deliveryPerson));
     }
@@ -62,6 +70,10 @@ public class DeliveryController {
     public ResponseEntity<AddDeliveryPersonResponse> editSalary(@PathVariable Integer id,
                              @PathVariable @Min(value = 1500, message = "Salary should be at least 1500 RON") Integer newSalary){
         DeliveryPerson deliveryPerson = deliveryPersonService.editSalary(id, newSalary);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+
+        Logger.getInstance().logMsg(CurrentUser.getInstance().getUserId(), this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), dtf.format(now));
 
         return ResponseEntity.ok().body(deliveryMapper.DeliveryPersonToAddDeliveryPersonResponse(deliveryPerson));
     }
@@ -78,6 +90,10 @@ public class DeliveryController {
                                @PathVariable @NotNull(message = "The beginning of the schedule is mandatory") Integer schStart,
                                @PathVariable @NotNull(message = "The end of the schedule is mandatory")Integer schStop){
         DeliveryPerson deliveryPerson = deliveryPersonService.editSchedule(id, schStart, schStop);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+
+        Logger.getInstance().logMsg(CurrentUser.getInstance().getUserId(), this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), dtf.format(now));
 
         return ResponseEntity.ok().body(deliveryMapper.DeliveryPersonToAddDeliveryPersonResponse(deliveryPerson));
     }

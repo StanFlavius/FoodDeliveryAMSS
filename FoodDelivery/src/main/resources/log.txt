@@ -1,0 +1,4 @@
+CurrentUserId 3|AuthController|auth|2023/02/05 22:32:49
+CurrentUserId 3|AuthController|getUser|2023/02/05 22:32:51
+CurrentUserId 3|AuthController|auth|2023/02/05 22:33:52
+CurrentUserId 3|AuthController|getUser|2023/02/05 22:33:54

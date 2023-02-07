@@ -1,15 +1,16 @@
 package com.example.fooddelivery.controller;
 
+import com.example.fooddelivery.CurrentUser;
 import com.example.fooddelivery.config.CustomUserDetails;
 import com.example.fooddelivery.dto.product.EditProductDto;
 import com.example.fooddelivery.dto.product.EditProductQuantityDto;
 import com.example.fooddelivery.dto.product.GetProductListDto;
 import com.example.fooddelivery.dto.product.NewProductDto;
 import com.example.fooddelivery.dto.restaurant.ViewRestaurantDto;
+import com.example.fooddelivery.log.Logger;
 import com.example.fooddelivery.mapper.ProductMapper;
 import com.example.fooddelivery.model.Product;
 import com.example.fooddelivery.model.RestaurantManager;
-import com.example.fooddelivery.repository.ProductRepository;
 import com.example.fooddelivery.service.ProductService;
 import com.example.fooddelivery.service.RestaurantManagerService;
 import com.example.fooddelivery.service.RestaurantService;
@@ -24,13 +25,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -68,6 +67,10 @@ public class ProductController {
         ViewRestaurantDto myRestaurant = restaurantService.getByRestaurantManagerId(restaurantManager.getRestaurantManagerId());
 
         Product product = productService.addNewProduct(newProductDto, myRestaurant.getId());
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+
+        Logger.getInstance().logMsg(CurrentUser.getInstance().getUserId(), this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), dtf.format(now));
 
         return ResponseEntity.ok().body(ProductMapper.ProductToGetProductListDto(product));
     }
@@ -81,6 +84,11 @@ public class ProductController {
         if (!updateSucceeded) {
             return ResponseEntity.notFound().build();
         }
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+
+        Logger.getInstance().logMsg(CurrentUser.getInstance().getUserId(), this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), dtf.format(now));
+
         return ResponseEntity.ok().build();
     }
 
@@ -96,6 +104,10 @@ public class ProductController {
                                                                         @RequestBody @Valid List<EditProductQuantityDto> productList) {
 
         List<Product> productList1 =  productService.editProductsQuantity(productList, restaurantId);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+
+        Logger.getInstance().logMsg(CurrentUser.getInstance().getUserId(), this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), dtf.format(now));
 
         return ResponseEntity.ok().body(productList1.stream().
                 map(ProductMapper::ProductToGetProductListDto)
@@ -112,6 +124,10 @@ public class ProductController {
     @DeleteMapping("/{productId}")
     public ResponseEntity<String> deleteProduct(@PathVariable Integer productId) {
         productService.deleteProduct(productId);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+
+        Logger.getInstance().logMsg(CurrentUser.getInstance().getUserId(), this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), dtf.format(now));
 
         return ResponseEntity.ok().body("Product deleted");
     }
@@ -126,6 +142,11 @@ public class ProductController {
     @GetMapping("")
     public ResponseEntity<List<GetProductListDto>> getProducts(){
         List<GetProductListDto> productList = productService.getProducts();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+
+        Logger.getInstance().logMsg(CurrentUser.getInstance().getUserId(), this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), dtf.format(now));
+
         return ResponseEntity.ok().body(productList);
     }
 
@@ -139,6 +160,11 @@ public class ProductController {
     @GetMapping("/{restaurantId}")
     public ResponseEntity<List<GetProductListDto>> getProductsPerRestaurant(@PathVariable Integer restaurantId){
         List<GetProductListDto> productList = productService.getProductsPerRestaurant(restaurantId);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+
+        Logger.getInstance().logMsg(CurrentUser.getInstance().getUserId(), this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), dtf.format(now));
+
         return ResponseEntity.ok().body(productList);
     }
 
@@ -156,6 +182,11 @@ public class ProductController {
         RestaurantManager restaurantManager = restaurantManagerService.getByUserId(authenticatedUser.getId());
         ViewRestaurantDto myRestaurant = restaurantService.getByRestaurantManagerId(restaurantManager.getRestaurantManagerId());
         List<GetProductListDto> productList = productService.getProductsPerRestaurant(myRestaurant.getId());
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+
+        Logger.getInstance().logMsg(CurrentUser.getInstance().getUserId(), this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), dtf.format(now));
+
         return ResponseEntity.ok().body(productList);
     }
 }
